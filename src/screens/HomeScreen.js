@@ -282,17 +282,28 @@ const HomeScreen = ({ navigation }) => {
             ))}
           </View>
 
-          {/* FOOTER */}
+          {/* FOOTER UNIFICADO */}
           <View style={styles.footer}>
+            <Divider style={styles.footerDivider} />
+            
             <Text style={styles.footerText}>
               Calculadora CLT 2026 • Ferramenta Educativa e Informativa
             </Text>
+            
             <Text style={styles.footerSubText}>
               Dados baseados na legislação brasileira vigente para 2026.
             </Text>
+
+            <View style={styles.footerBottomRow}>
+              <Text style={styles.copyrightText}>© 2026 Calculadora CLT</Text>
+              <View style={styles.dotSeparator} />
+              <TouchableOpacity onPress={() => navigation.navigate("Privacidade")}>
+                <Text style={styles.privacyLink}>Política de Privacidade</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={{ height: 40 }} />
+          <View style={{ height: 60 }} />
         </View>
       </ScrollView>
     </View>
@@ -491,16 +502,54 @@ const styles = StyleSheet.create({
   },
   faqAnswerText: { fontSize: 14, color: "#94a3b8", lineHeight: 22 },
 
-  // FOOTER
-  footer: {
-    marginTop: 50,
-    alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.05)",
-    paddingTop: 30,
+  footer: { 
+    marginTop: 60, 
+    alignItems: 'center', 
+    paddingHorizontal: 20 
   },
-  footerText: { fontSize: 13, color: "#475569", fontWeight: "700" },
-  footerSubText: { fontSize: 11, color: "#334155", marginTop: 4 },
+  footerDivider: { 
+    width: '100%', 
+    maxWidth: 600, 
+    backgroundColor: 'rgba(255,255,255,0.05)', 
+    marginBottom: 25 
+  },
+  footerText: { 
+    fontSize: 13, 
+    color: '#94a3b8', // Cinza azulado mais claro para leitura
+    fontWeight: '700', 
+    textAlign: 'center' 
+  },
+  footerSubText: { 
+    fontSize: 11, 
+    color: '#475569', 
+    marginTop: 6, 
+    textAlign: 'center',
+    marginBottom: 20
+  },
+  footerBottomRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    flexWrap: 'wrap' // Garante que não quebre em telas muito pequenas
+  },
+  copyrightText: { 
+    fontSize: 12, 
+    color: '#334155', 
+    fontWeight: '600' 
+  },
+  dotSeparator: { 
+    width: 4, 
+    height: 4, 
+    borderRadius: 2, 
+    backgroundColor: '#334155', 
+    marginHorizontal: 10 
+  },
+  privacyLink: { 
+    color: '#60a5fa', 
+    fontSize: 12, 
+    fontWeight: '600',
+    textDecorationLine: "underline" 
+  },
 });
 
 export default HomeScreen;

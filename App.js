@@ -4,22 +4,42 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
   Provider as PaperProvider,
-  DefaultTheme,
+  MD3DarkTheme,
 } from "react-native-paper";
 
+// Importação das Telas
 import HomeScreen from "./src/screens/HomeScreen";
 import LiquidoScreen from "./src/screens/LiquidoScreen";
 import FeriasScreen from "./src/screens/FeriasScreen";
 import DecimoScreen from "./src/screens/DecimoScreen";
 import RescisaoScreen from "./src/screens/RescisaoScreen";
+import PrivacidadeScreen from "./src/screens/Privacidade";
 
 const Stack = createStackNavigator();
 
+// Tema
 const theme = {
-  ...DefaultTheme,
+  ...MD3DarkTheme,
   colors: {
-    ...DefaultTheme.colors,
-    background: "rgb(17, 28, 52)",
+    ...MD3DarkTheme.colors,
+    primary: "#60a5fa",
+    background: "#081120",
+    surface: "#111c34",
+  },
+};
+
+// 🌐 Linking (URLs bonitas para web)
+const linking = {
+  prefixes: ["/"],
+  config: {
+    screens: {
+      Home: "calculadora-clt",
+      Liquido: "salario-liquido",
+      Ferias: "ferias",
+      Decimo: "decimo-terceiro",
+      Rescisao: "rescisao",
+      Privacidade: "politica-de-privacidade",
+    },
   },
 };
 
@@ -27,46 +47,54 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <View style={styles.root}>
-        <NavigationContainer>
+        <NavigationContainer linking={linking}>
           <Stack.Navigator
             initialRouteName="Home"
             screenOptions={{
-              headerShown: false, // Mantém o cabeçalho oculto para o seu design customizado
+              headerShown: false,
+              cardStyle: { backgroundColor: "#081120" },
             }}
           >
-            {/* Tela Principal */}
-            <Stack.Screen 
-              name="Home" 
-              component={HomeScreen} 
-              options={{ title: 'Calculadora CLT' }} 
+            {/* HOME */}
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ title: "Calculadora CLT" }}
             />
 
-            {/* Tela de Salário Líquido */}
-            <Stack.Screen 
-              name="Liquido" 
-              component={LiquidoScreen} 
-              options={{ title: 'Salário Líquido' }} 
+            {/* SALÁRIO LÍQUIDO */}
+            <Stack.Screen
+              name="Liquido"
+              component={LiquidoScreen}
+              options={{ title: "Salário Líquido" }}
             />
 
-            {/* Tela de Férias */}
-            <Stack.Screen 
-              name="Ferias" 
-              component={FeriasScreen} 
-              options={{ title: 'Cálculo de Férias' }} 
+            {/* FÉRIAS */}
+            <Stack.Screen
+              name="Ferias"
+              component={FeriasScreen}
+              options={{ title: "Férias" }}
             />
 
-            {/* Tela de 13º Salário */}
-            <Stack.Screen 
-              name="Decimo" 
-              component={DecimoScreen} 
-              options={{ title: '13º Salário' }} 
+            {/* 13º */}
+            <Stack.Screen
+              name="Decimo"
+              component={DecimoScreen}
+              options={{ title: "13º Salário" }}
             />
 
-            {/* Tela de Rescisão */}
-            <Stack.Screen 
-              name="Rescisao" 
-              component={RescisaoScreen} 
-              options={{ title: 'Rescisão / Acerto' }} 
+            {/* RESCISÃO */}
+            <Stack.Screen
+              name="Rescisao"
+              component={RescisaoScreen}
+              options={{ title: "Rescisão Trabalhista" }}
+            />
+
+            {/* PRIVACIDADE */}
+            <Stack.Screen
+              name="Privacidade"
+              component={PrivacidadeScreen}
+              options={{ title: "Política de Privacidade" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
@@ -78,6 +106,6 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "rgb(17, 28, 52)", // Ajustado para não dar o flash cinza
+    backgroundColor: "#081120",
   },
 });
