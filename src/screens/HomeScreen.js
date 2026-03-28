@@ -8,7 +8,7 @@ import {
   useWindowDimensions,
   Platform,
 } from "react-native";
-import { Text, Card, Avatar } from "react-native-paper";
+import { Text, Card, Avatar, List, Divider } from "react-native-paper";
 
 const HomeScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
@@ -26,18 +26,18 @@ const HomeScreen = ({ navigation }) => {
   const menuItems = [
     {
       title: "Salário Líquido",
-      description: "Descontos, adicionais e horas extras",
+      description: "Cálculo de descontos oficiais, extras e dependentes",
       icon: "cash-multiple",
       color: "#16a34a",
       cardTop: "#dcfce7",
       cardBottom: "#bbf7d0",
       darkText: "#14532d",
       screen: "Liquido",
-      tag: "Mais usado",
+      tag: "Mais Usado",
     },
     {
       title: "Férias",
-      description: "Cálculo de férias, proporcionais e 1/3",
+      description: "Simule férias com 1/3, abono e descontos de lei",
       icon: "umbrella-beach",
       color: "#2563eb",
       cardTop: "#dbeafe",
@@ -48,18 +48,18 @@ const HomeScreen = ({ navigation }) => {
     },
     {
       title: "13º Salário",
-      description: "Parcelas, descontos e proporcional",
+      description: "Cálculo das parcelas e valores proporcionais",
       icon: "gift",
       color: "#f59e0b",
       cardTop: "#fef3c7",
       cardBottom: "#fde68a",
       darkText: "#92400e",
       screen: "Decimo",
-      tag: "Essencial",
+      tag: "Previsão",
     },
     {
       title: "Rescisão / Acerto",
-      description: "Aviso, multa FGTS, férias e 13º",
+      description: "Simule sua saída: aviso, multa FGTS e verbas",
       icon: "file-document-outline",
       color: "#ef4444",
       cardTop: "#fee2e2",
@@ -70,6 +70,25 @@ const HomeScreen = ({ navigation }) => {
     },
   ];
 
+  const faqItems = [
+    {
+      q: "Quais as faixas de desconto do INSS em 2026?",
+      a: "As alíquotas do INSS 2026 são progressivas (7,5% a 14%). Nossa calculadora aplica automaticamente o cálculo por faixas, garantindo o valor exato do desconto previdenciário sobre o salário bruto.",
+    },
+    {
+      q: "O que é o desconto de IRRF no salário?",
+      a: "O Imposto de Renda Retido na Fonte (IRRF) é calculado após a dedução do INSS e de dependentes. Utilizamos a tabela oficial de 2026 para calcular sua base de cálculo e parcela a deduzir.",
+    },
+    {
+      q: "Como calcular a multa de 40% do FGTS na rescisão?",
+      a: "Na dispensa sem justa causa, o empregador paga 40% sobre o saldo total depositado na conta do FGTS durante o contrato. Nossa ferramenta de rescisão ajuda a projetar esse valor.",
+    },
+    {
+      q: "O que é o Abono Pecuniário nas férias?",
+      a: "É a 'venda' de 10 dias de férias. Nossa calculadora de férias permite simular o valor a receber caso você opte por converter parte do seu descanso em dinheiro.",
+    },
+  ];
+
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor="#081120" />
@@ -77,20 +96,21 @@ const HomeScreen = ({ navigation }) => {
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={true}
-        nestedScrollEnabled={true}
       >
+        {/* ELEMENTOS VISUAIS DE FUNDO */}
         <View pointerEvents="none" style={styles.glowOne} />
         <View pointerEvents="none" style={styles.glowTwo} />
         <View pointerEvents="none" style={styles.glowThree} />
 
-        <View pointerEvents="box-none" style={styles.pageWrap}>
+        <View style={styles.pageWrap}>
+          {/* HEADER / HERO SECTION */}
           <View style={[styles.hero, isDesktop && styles.heroDesktop]}>
             <View style={styles.heroLeft}>
               <View style={styles.heroBadge}>
-                <Text style={styles.heroBadgeText}>Calculadora Trabalhista</Text>
+                <Text style={styles.heroBadgeText}>
+                  BRASIL • ATUALIZADO 2026
+                </Text>
               </View>
-
               <Text
                 style={[
                   styles.heroTitle,
@@ -100,49 +120,43 @@ const HomeScreen = ({ navigation }) => {
               >
                 Calculadora CLT
               </Text>
-
               <Text
                 style={[
                   styles.heroSubtitle,
                   isDesktop && styles.heroSubtitleDesktop,
                 ]}
               >
-                Simule salário líquido, férias, 13º e rescisão com uma interface
-                mais moderna, organizada e pronta para celular e web.
+                A ferramenta definitiva para trabalhadores e profissionais de
+                RH. Simule Salário Líquido, Rescisão, Férias e Décimo Terceiro
+                com as tabelas de impostos de 2026.
               </Text>
             </View>
 
             <View
-              style={[
-                styles.summaryCard,
-                isMobile && styles.summaryCardMobile,
-              ]}
+              style={[styles.summaryCard, isMobile && styles.summaryCardMobile]}
             >
               <View style={styles.summaryItem}>
-                <Text style={styles.summaryNumber}>4</Text>
-                <Text style={styles.summaryLabel}>Cálculos</Text>
+                <Text style={styles.summaryNumber}>100%</Text>
+                <Text style={styles.summaryLabel}>Gratuito</Text>
               </View>
-
               <View style={styles.summaryDivider} />
-
+              <View style={styles.summaryItem}>
+                <Text style={styles.summaryNumber}>100%</Text>
+                <Text style={styles.summaryLabel}>Privacidade</Text>
+              </View>
+              <View style={styles.summaryDivider} />
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryNumber}>2026</Text>
-                <Text style={styles.summaryLabel}>Atualizado</Text>
-              </View>
-
-              <View style={styles.summaryDivider} />
-
-              <View style={styles.summaryItem}>
-                <Text style={styles.summaryNumber}>CLT</Text>
-                <Text style={styles.summaryLabel}>Brasil</Text>
+                <Text style={styles.summaryLabel}>Tabelas</Text>
               </View>
             </View>
           </View>
 
+          {/* GRID DE CALCULADORAS */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Ferramentas</Text>
+            <Text style={styles.sectionTitle}>Ferramentas de Cálculo</Text>
             <Text style={styles.sectionSubtitle}>
-              Escolha o cálculo que você deseja fazer
+              Cálculos trabalhistas precisos conforme as leis vigentes
             </Text>
           </View>
 
@@ -151,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
               <TouchableOpacity
                 key={index}
                 style={[styles.cardWrapper, { width: getCardWidth() }]}
-                activeOpacity={0.92}
+                activeOpacity={0.9}
                 onPress={() => navigation.navigate(item.screen)}
               >
                 <Card
@@ -164,9 +178,11 @@ const HomeScreen = ({ navigation }) => {
                   ]}
                 >
                   <View
-                    style={[styles.cardColorBand, { backgroundColor: item.color }]}
+                    style={[
+                      styles.cardColorBand,
+                      { backgroundColor: item.color },
+                    ]}
                   />
-
                   <Card.Content
                     style={[
                       styles.cardContent,
@@ -174,54 +190,44 @@ const HomeScreen = ({ navigation }) => {
                     ]}
                   >
                     <View style={styles.cardTop}>
-                      <View
-                        style={[
-                          styles.iconWrapper,
-                          { backgroundColor: item.color + "18" },
-                        ]}
-                      >
-                        <Avatar.Icon
-                          size={52}
-                          icon={item.icon}
-                          style={[styles.avatarIcon, { backgroundColor: item.color }]}
-                          color="#ffffff"
-                        />
-                      </View>
-
+                      <Avatar.Icon
+                        size={48}
+                        icon={item.icon}
+                        style={{ backgroundColor: item.color }}
+                        color="#ffffff"
+                      />
                       <View style={styles.tagBadge}>
-                        <Text style={[styles.tagText, { color: item.darkText }]}>
+                        <Text
+                          style={[styles.tagText, { color: item.darkText }]}
+                        >
                           {item.tag}
                         </Text>
                       </View>
                     </View>
-
                     <View style={styles.cardTextArea}>
-                      <Text style={[styles.cardTitle, { color: item.darkText }]}>
+                      <Text
+                        style={[styles.cardTitle, { color: item.darkText }]}
+                      >
                         {item.title}
                       </Text>
                       <Text style={styles.cardDescription}>
                         {item.description}
                       </Text>
                     </View>
-
                     <View
                       style={[
                         styles.cardFooter,
-                        { borderTopColor: item.color + "35" },
+                        { borderTopColor: item.color + "30" },
                       ]}
                     >
-                      <Text style={[styles.cardAction, { color: item.darkText }]}>
-                        Abrir cálculo
-                      </Text>
-
-                      <View
-                        style={[
-                          styles.arrowCircle,
-                          { backgroundColor: item.color },
-                        ]}
+                      <Text
+                        style={[styles.cardAction, { color: item.darkText }]}
                       >
-                        <Text style={styles.cardArrow}>→</Text>
-                      </View>
+                        Simular Agora
+                      </Text>
+                      <Text style={[styles.cardArrow, { color: item.color }]}>
+                        →
+                      </Text>
                     </View>
                   </Card.Content>
                 </Card>
@@ -229,31 +235,61 @@ const HomeScreen = ({ navigation }) => {
             ))}
           </View>
 
-          <View
-            style={[
-              styles.bottomGrid,
-              isMobile && styles.bottomGridMobile,
-            ]}
-          >
-            <View style={styles.tipCard}>
-              <View style={styles.tipBadge}>
-                <Text style={styles.tipBadgeText}>Dica</Text>
+          {/* TEXTO DE AUTORIDADE PARA SEO */}
+          <View style={styles.seoSection}>
+            <Text style={styles.seoTitle}>
+              Por que usar nossa Calculadora Trabalhista?
+            </Text>
+            <Text style={styles.seoDescription}>
+              Entender seus{" "}
+              <Text style={styles.boldBlue}>Direitos Trabalhistas</Text> em 2026
+              não precisa ser difícil. Nosso sistema foi projetado para calcular
+              com precisão o <Text style={styles.bold}>Salário Líquido</Text>,
+              levando em conta a tabela progressiva do{" "}
+              <Text style={styles.bold}>INSS</Text> e as faixas de{" "}
+              <Text style={styles.bold}>IRRF</Text>. Seja para conferir o
+              holerite ou planejar uma{" "}
+              <Text style={styles.bold}>Rescisão de Contrato</Text>, oferecemos
+              uma simulação completa baseada nas regras da CLT.
+            </Text>
+          </View>
+
+          {/* SEÇÃO DE FAQ (ESTRUTURA DE DADOS PARA O GOOGLE) */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Perguntas Frequentes</Text>
+          </View>
+
+          <View style={[styles.faqGrid, isDesktop && styles.faqGridDesktop]}>
+            {faqItems.map((item, index) => (
+              <View
+                key={index}
+                style={[styles.faqCard, isDesktop && { width: "48.5%" }]}
+              >
+                <List.Accordion
+                  title={item.q}
+                  titleStyle={styles.faqQuestion}
+                  style={styles.faqAccordion}
+                  theme={{ colors: { primary: "#60a5fa" } }}
+                >
+                  <View style={styles.faqAnswerContainer}>
+                    <Text style={styles.faqAnswerText}>{item.a}</Text>
+                  </View>
+                </List.Accordion>
+                <Divider
+                  style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
+                />
               </View>
+            ))}
+          </View>
 
-              <Text style={styles.tipTitle}>Comece pelo salário líquido</Text>
-              <Text style={styles.tipText}>
-                Essa é a tela mais completa para visualizar descontos,
-                adicionais, horas extras, IRRF e INSS de forma resumida.
-              </Text>
-            </View>
-
-            <View style={styles.infoCard}>
-              <Text style={styles.infoCardTitle}>Mais praticidade no dia a dia</Text>
-              <Text style={styles.infoCardText}>
-                Use a calculadora para simular rapidamente valores antes de
-                fechar contas, conferir verbas ou validar rescisões.
-              </Text>
-            </View>
+          {/* FOOTER */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              Calculadora CLT 2026 • Ferramenta Educativa e Informativa
+            </Text>
+            <Text style={styles.footerSubText}>
+              Dados baseados na legislação brasileira vigente para 2026.
+            </Text>
           </View>
 
           <View style={{ height: 40 }} />
@@ -264,375 +300,207 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: "#081120",
-  },
-
-  container: {
-    flex: 1,
-    backgroundColor: "#081120",
-  },
-
+  root: { flex: 1, backgroundColor: "#081120" },
+  container: { flex: 1 },
   contentContainer: {
-    paddingTop: Platform.OS === "web" ? 18 : 0,
-    paddingBottom: 40,
+    paddingTop: Platform.OS === "web" ? 20 : 0,
+    paddingBottom: 60,
   },
-
   pageWrap: {
     width: "100%",
-    maxWidth: 1340,
+    maxWidth: 1200,
     alignSelf: "center",
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
   },
 
+  // EFEITOS DE FUNDO
   glowOne: {
     position: "absolute",
-    top: -70,
-    right: -20,
+    top: -100,
+    right: -50,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: "rgba(37,99,235,0.15)",
+  },
+  glowTwo: {
+    position: "absolute",
+    top: 400,
+    left: -100,
     width: 250,
     height: 250,
     borderRadius: 125,
-    backgroundColor: "rgba(37,99,235,0.22)",
+    backgroundColor: "rgba(34,197,94,0.08)",
   },
-
-  glowTwo: {
-    position: "absolute",
-    top: 360,
-    left: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: "rgba(34,197,94,0.12)",
-  },
-
   glowThree: {
     position: "absolute",
-    bottom: 80,
-    right: -50,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: "rgba(239,68,68,0.10)",
+    bottom: -50,
+    right: 0,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: "rgba(239,68,68,0.08)",
   },
 
+  // HERO SECTION
   hero: {
     backgroundColor: "#111c34",
-    borderRadius: 30,
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 24,
-    marginBottom: 22,
+    borderRadius: 24,
+    padding: 24,
+    marginBottom: 30,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.22,
-    shadowRadius: 18,
-    elevation: 10,
-    zIndex: 3,
+    elevation: 8,
   },
-
   heroDesktop: {
-    paddingHorizontal: 34,
-    paddingTop: 32,
-    paddingBottom: 30,
-  },
-
-  heroLeft: {
-    marginBottom: 20,
-  },
-
-  heroBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: "rgba(96,165,250,0.18)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: "rgba(147,197,253,0.25)",
-  },
-
-  heroBadgeText: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: "#bfdbfe",
-  },
-
-  heroTitle: {
-    fontSize: 34,
-    fontWeight: "900",
-    color: "#ffffff",
-    marginBottom: 10,
-  },
-
-  heroTitleMobile: {
-    fontSize: 28,
-  },
-
-  heroTitleDesktop: {
-    fontSize: 44,
-  },
-
-  heroSubtitle: {
-    fontSize: 14,
-    color: "#cbd5e1",
-    lineHeight: 22,
-    maxWidth: 760,
-  },
-
-  heroSubtitleDesktop: {
-    fontSize: 16,
-    lineHeight: 25,
-  },
-
-  summaryCard: {
-    backgroundColor: "rgba(255,255,255,0.06)",
-    borderRadius: 24,
-    paddingVertical: 18,
-    paddingHorizontal: 14,
+    padding: 40,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
   },
-
-  summaryCardMobile: {
-    paddingHorizontal: 8,
+  heroLeft: { flex: 1, marginRight: 20 },
+  heroBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "rgba(96,165,250,0.15)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 12,
   },
-
-  summaryItem: {
-    flex: 1,
-    alignItems: "center",
+  heroBadgeText: {
+    fontSize: 11,
+    fontWeight: "900",
+    color: "#60a5fa",
+    letterSpacing: 1,
   },
-
-  summaryNumber: {
-    fontSize: 19,
+  heroTitle: {
+    fontSize: 32,
     fontWeight: "900",
     color: "#ffffff",
-    marginBottom: 4,
+    marginBottom: 12,
   },
+  heroTitleMobile: { fontSize: 28 },
+  heroTitleDesktop: { fontSize: 42 },
+  heroSubtitle: { fontSize: 15, color: "#94a3b8", lineHeight: 24 },
+  heroSubtitleDesktop: { fontSize: 17 },
 
+  // SUMMARY CARD
+  summaryCard: {
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderRadius: 20,
+    padding: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    minWidth: 280,
+  },
+  summaryCardMobile: { marginTop: 20 },
+  summaryItem: { alignItems: "center", paddingHorizontal: 10 },
+  summaryNumber: { fontSize: 18, fontWeight: "900", color: "#ffffff" },
   summaryLabel: {
-    fontSize: 12,
-    color: "#cbd5e1",
-    fontWeight: "600",
+    fontSize: 11,
+    color: "#64748b",
+    textTransform: "uppercase",
+    marginTop: 2,
   },
-
   summaryDivider: {
     width: 1,
-    height: 32,
-    backgroundColor: "rgba(255,255,255,0.12)",
+    height: 30,
+    backgroundColor: "rgba(255,255,255,0.1)",
   },
 
-  sectionHeader: {
-    paddingHorizontal: 6,
-    paddingTop: 6,
-    paddingBottom: 14,
-  },
-
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: "900",
-    color: "#f8fafc",
-    marginBottom: 4,
-  },
-
-  sectionSubtitle: {
-    fontSize: 14,
-    color: "#94a3b8",
-  },
-
+  // GRID
+  sectionHeader: { marginBottom: 20, marginTop: 10 },
+  sectionTitle: { fontSize: 22, fontWeight: "900", color: "#f8fafc" },
+  sectionSubtitle: { fontSize: 14, color: "#64748b" },
   menuGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    rowGap: 16,
-    zIndex: 5,
+    rowGap: 20,
   },
-
-  cardWrapper: {
-    marginBottom: 2,
-    zIndex: 5,
-  },
-
-  card: {
-    borderRadius: 26,
-    borderWidth: 1,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 5,
-  },
-
-  cardColorBand: {
-    height: 8,
-    width: "100%",
-  },
-
-  cardContent: {
-    minHeight: 240,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    justifyContent: "space-between",
-  },
-
+  cardWrapper: { borderRadius: 24 },
+  card: { borderRadius: 24, borderWidth: 1, overflow: "hidden" },
+  cardColorBand: { height: 6, width: "100%" },
+  cardContent: { minHeight: 230, padding: 20, justifyContent: "space-between" },
   cardTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "flex-start",
   },
-
-  iconWrapper: {
-    width: 78,
-    height: 78,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-
-  avatarIcon: {
-    elevation: 0,
-  },
-
   tagBadge: {
-    backgroundColor: "#ffffffd9",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    marginBottom: 4,
+    backgroundColor: "rgba(255,255,255,0.5)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
-
-  tagText: {
-    fontSize: 11,
-    fontWeight: "900",
-  },
-
-  cardTextArea: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: 4,
-  },
-
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "900",
-    lineHeight: 23,
-    marginBottom: 8,
-  },
-
-  cardDescription: {
-    fontSize: 13.5,
-    lineHeight: 19,
-    color: "#334155",
-  },
-
+  tagText: { fontSize: 10, fontWeight: "800" },
+  cardTextArea: { marginTop: 15 },
+  cardTitle: { fontSize: 19, fontWeight: "900", marginBottom: 6 },
+  cardDescription: { fontSize: 13, color: "#334155", lineHeight: 18 },
   cardFooter: {
-    marginTop: 14,
-    paddingTop: 14,
+    marginTop: 15,
+    paddingTop: 12,
     borderTopWidth: 1,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
   },
+  cardAction: { fontSize: 13, fontWeight: "800" },
+  cardArrow: { fontSize: 16, fontWeight: "900" },
 
-  cardAction: {
-    fontSize: 13,
-    fontWeight: "900",
+  // SEO SECTION
+  seoSection: {
+    padding: 24,
+    marginTop: 40,
+    backgroundColor: "#0f172a",
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.05)",
   },
-
-  arrowCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  cardArrow: {
-    fontSize: 18,
+  seoTitle: {
+    fontSize: 20,
     fontWeight: "900",
     color: "#ffffff",
-    marginTop: -1,
+    marginBottom: 12,
   },
+  seoDescription: { fontSize: 15, color: "#94a3b8", lineHeight: 26 },
+  bold: { color: "#ffffff", fontWeight: "700" },
+  boldBlue: { color: "#60a5fa", fontWeight: "800" },
 
-  bottomGrid: {
+  // FAQ
+  faqGrid: { marginTop: 10 },
+  faqGridDesktop: {
     flexDirection: "row",
-    gap: 16,
-    marginTop: 20,
-    zIndex: 4,
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
-
-  bottomGridMobile: {
-    flexDirection: "column",
-  },
-
-  tipCard: {
-    flex: 1,
+  faqCard: {
     backgroundColor: "#111c34",
-    borderRadius: 24,
-    padding: 18,
+    borderRadius: 16,
+    marginBottom: 12,
+    overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 14,
-    elevation: 6,
+    borderColor: "rgba(255,255,255,0.05)",
   },
+  faqAccordion: { backgroundColor: "#111c34" },
+  faqQuestion: { fontSize: 15, fontWeight: "700", color: "#f8fafc" },
+  faqAnswerContainer: {
+    padding: 20,
+    paddingTop: 0,
+    backgroundColor: "#111c34",
+  },
+  faqAnswerText: { fontSize: 14, color: "#94a3b8", lineHeight: 22 },
 
-  tipBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: "rgba(96,165,250,0.18)",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    marginBottom: 10,
+  // FOOTER
+  footer: {
+    marginTop: 50,
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.05)",
+    paddingTop: 30,
   },
-
-  tipBadgeText: {
-    fontSize: 11,
-    fontWeight: "900",
-    color: "#bfdbfe",
-  },
-
-  tipTitle: {
-    fontSize: 18,
-    fontWeight: "900",
-    color: "#ffffff",
-    marginBottom: 6,
-  },
-
-  tipText: {
-    fontSize: 13,
-    color: "#cbd5e1",
-    lineHeight: 20,
-  },
-
-  infoCard: {
-    flex: 1,
-    backgroundColor: "#0f1a30",
-    borderRadius: 24,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-  },
-
-  infoCardTitle: {
-    fontSize: 18,
-    fontWeight: "900",
-    color: "#ffffff",
-    marginBottom: 8,
-  },
-
-  infoCardText: {
-    fontSize: 13,
-    lineHeight: 20,
-    color: "#cbd5e1",
-  },
+  footerText: { fontSize: 13, color: "#475569", fontWeight: "700" },
+  footerSubText: { fontSize: 11, color: "#334155", marginTop: 4 },
 });
 
 export default HomeScreen;
