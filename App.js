@@ -36,11 +36,11 @@ export default function App() {
               headerShown: false,
             }}
           >
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Liquido" component={LiquidoScreen} />
-            <Stack.Screen name="Ferias" component={FeriasScreen} />
-            <Stack.Screen name="Decimo" component={DecimoScreen} />
-            <Stack.Screen name="Rescisao" component={RescisaoScreen} />
+            <Stack.Screen name="Calculadora CLT" component={HomeScreen} />
+            <Stack.Screen name="Salário Líquido" component={LiquidoScreen} />
+            <Stack.Screen name="Cálculo de Férias" component={FeriasScreen} />
+            <Stack.Screen name="13º Salário" component={DecimoScreen} />
+            <Stack.Screen name="Rescisão / Acerto" component={RescisaoScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
