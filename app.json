@@ -23,7 +23,7 @@
       "package": "com.tiagosousastg.CalculadoraCLT"
     },
    "web": {
-      "output": "single",
+      "output": "static",
       "bundler": "metro",
       "favicon": "./assets/icon.png",
       "lang": "pt-BR",
