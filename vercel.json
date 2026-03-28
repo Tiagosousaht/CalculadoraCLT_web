@@ -4,6 +4,9 @@
   "installCommand": "npm install",
   "buildCommand": "npx expo export:web",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!ads.txt|robots.txt|sitemap.xml|.*\\..*).*)",
+      "destination": "/index.html"
+    }
   ]
 }
