@@ -22,7 +22,7 @@
       "package": "com.tiagosousastg.CalculadoraCLT"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       "@react-native-community/datetimepicker",
