@@ -3,10 +3,12 @@
   "outputDirectory": "dist",
   "installCommand": "npm install --legacy-peer-deps",
   "buildCommand": "npx expo export --platform web",
+  "env": {
+    "EXPO_USE_METRO_WORKSPACE": "1",
+    "EXPO_PUBLIC_PLATFORM": "web",
+    "EXPO_ROUTER_IMPORT_MODE": "lazy"
+  },
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
