@@ -2,7 +2,7 @@
   "name": "calculadoraclt",
   "version": "1.0.0",
   "main": "index.js",
-"scripts": {
+  "scripts": {
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -17,6 +17,7 @@
     "expo": "~55.0.8",
     "expo-linking": "~55.0.8",
     "expo-print": "~55.0.9",
+    "expo-router": "55.0.0",
     "expo-sharing": "~55.0.14",
     "expo-status-bar": "~55.0.4",
     "expo-system-ui": "~55.0.10",
