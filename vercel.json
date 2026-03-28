@@ -2,7 +2,7 @@
   "framework": null,
   "outputDirectory": "dist",
   "installCommand": "npm install",
-  "buildCommand": "npx expo export --platform web",
+  "buildCommand": "npx expo export --platform web --no-ssg",
   "rewrites": [
     {
       "source": "/((?!ads.txt|robots.txt|sitemap.xml|.*\\..*).*)",
