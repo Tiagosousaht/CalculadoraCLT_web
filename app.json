@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "Calculadora CLT",
+    "name": "Calculadora CLT 2026 - Salário Líquido e Rescisão",
     "slug": "CalculadoraCLT",
     "version": "1.0.0",
+    "description": "Simulador gratuito de cálculos trabalhistas: Salário Líquido, Férias, 13º Salário e Rescisão CLT com regras atualizadas para 2026.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +23,22 @@
       "package": "com.tiagosousastg.CalculadoraCLT"
     },
     "web": {
-      "favicon": "./assets/icon.png"
+      "favicon": "./assets/icon.png",
+      "lang": "pt-BR",
+      "name": "Calculadora CLT Online - Simulação Completa e Grátis",
+      "shortName": "Calculadora CLT",
+      "description": "Calcule seu salário líquido, férias, 13º e rescisão de contrato. A ferramenta mais rápida para entender seus direitos trabalhistas em 2026.",
+      "themeColor": "#0F172A",
+      "meta": {
+        "google-site-verification": "googlecc5b1a8bf40fa81c",
+        "keywords": [
+          "calculadora clt",
+          "salário líquido 2026",
+          "cálculo rescisão",
+          "simulador férias",
+          "13 salário"
+        ]
+      }
     },
     "plugins": ["@react-native-community/datetimepicker", "expo-sharing"],
     "extra": {
