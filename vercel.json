@@ -2,14 +2,8 @@
   "framework": null,
   "outputDirectory": "dist",
   "installCommand": "npm install",
-  "buildCommand": "npx expo export --platform web",
-  "env": {
-    "EXPO_PUBLIC_PLATFORM": "web"
-  },
+  "buildCommand": "npx expo export:web",
   "rewrites": [
-    {
-      "source": "/((?!ads.txt|robots.txt|sitemap.xml|.*\\..*).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
