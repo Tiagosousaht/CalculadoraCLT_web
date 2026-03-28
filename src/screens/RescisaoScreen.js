@@ -589,12 +589,35 @@ export default function RescisaoScreen({ navigation }) {
                       value={dados.modoFGTS}
                       onValueChange={(v) => atualizarCampo("modoFGTS", v)}
                       buttons={[
-                        { value: "manual", label: "Informar saldo" },
-                        { value: "calcular", label: "Calcular pelo salário" },
+                        {
+                          value: "manual",
+                          label: "Informar saldo",
+                          checkedColor: "#FFFFFF", // Texto branco quando selecionado
+                          uncheckedColor: "#94A3B8", // Texto cinza quando não selecionado
+                          style: {
+                            backgroundColor:
+                              dados.modoFGTS === "manual"
+                                ? "#3B82F6"
+                                : "transparent",
+                            borderColor: "#334155",
+                          },
+                        },
+                        {
+                          value: "calcular",
+                          label: "Calcular pelo salário",
+                          checkedColor: "#FFFFFF",
+                          uncheckedColor: "#94A3B8",
+                          style: {
+                            backgroundColor:
+                              dados.modoFGTS === "calcular"
+                                ? "#3B82F6"
+                                : "transparent",
+                            borderColor: "#334155",
+                          },
+                        },
                       ]}
                       style={styles.seg}
                     />
-
                     {dados.modoFGTS === "manual" && (
                       <TextInput
                         label="Saldo Total do FGTS"
@@ -832,8 +855,8 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: 16,
-    color: '#2563eb',
-    fontWeight: 'bold', // Título em negrito
+    color: "#2563eb",
+    fontWeight: "bold", // Título em negrito
     marginBottom: 8,
     marginTop: 16,
   },
