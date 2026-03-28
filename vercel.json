@@ -9,18 +9,12 @@
     "EXPO_ROUTER_IMPORT_MODE": "lazy"
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
-
-{
-  "rewrites": [
     {
       "source": "/ads.txt",
       "destination": "/ads.txt"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!ads.txt|robots.txt|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]
