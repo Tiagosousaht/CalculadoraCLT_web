@@ -22,7 +22,9 @@
       },
       "package": "com.tiagosousastg.CalculadoraCLT"
     },
-    "web": {
+   "web": {
+      "output": "single",
+      "bundler": "metro",
       "favicon": "./assets/icon.png",
       "lang": "pt-BR",
       "name": "Calculadora CLT Online - Simulação Completa e Grátis",
