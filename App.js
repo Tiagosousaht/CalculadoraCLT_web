@@ -23,8 +23,6 @@ const theme = {
   },
 };
 
-
-
 export default function App() {
   return (
     <PaperProvider theme={theme}>
@@ -33,14 +31,43 @@ export default function App() {
           <Stack.Navigator
             initialRouteName="Home"
             screenOptions={{
-              headerShown: false,
+              headerShown: false, // Mantém o cabeçalho oculto para o seu design customizado
             }}
           >
-            <Stack.Screen name="Calculadora CLT" component={HomeScreen} />
-            <Stack.Screen name="Salário Líquido" component={LiquidoScreen} />
-            <Stack.Screen name="Cálculo de Férias" component={FeriasScreen} />
-            <Stack.Screen name="13º Salário" component={DecimoScreen} />
-            <Stack.Screen name="Rescisão / Acerto" component={RescisaoScreen} />
+            {/* Tela Principal */}
+            <Stack.Screen 
+              name="Home" 
+              component={HomeScreen} 
+              options={{ title: 'Calculadora CLT' }} 
+            />
+
+            {/* Tela de Salário Líquido */}
+            <Stack.Screen 
+              name="Liquido" 
+              component={LiquidoScreen} 
+              options={{ title: 'Salário Líquido' }} 
+            />
+
+            {/* Tela de Férias */}
+            <Stack.Screen 
+              name="Ferias" 
+              component={FeriasScreen} 
+              options={{ title: 'Cálculo de Férias' }} 
+            />
+
+            {/* Tela de 13º Salário */}
+            <Stack.Screen 
+              name="Decimo" 
+              component={DecimoScreen} 
+              options={{ title: '13º Salário' }} 
+            />
+
+            {/* Tela de Rescisão */}
+            <Stack.Screen 
+              name="Rescisao" 
+              component={RescisaoScreen} 
+              options={{ title: 'Rescisão / Acerto' }} 
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
@@ -51,6 +78,6 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#f5f7fb",
+    backgroundColor: "rgb(17, 28, 52)", // Ajustado para não dar o flash cinza
   },
 });
