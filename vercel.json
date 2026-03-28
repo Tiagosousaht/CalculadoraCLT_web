@@ -12,3 +12,16 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
+
+{
+  "rewrites": [
+    {
+      "source": "/ads.txt",
+      "destination": "/ads.txt"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
