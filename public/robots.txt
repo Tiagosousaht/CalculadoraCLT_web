@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# Indica onde está o mapa do seu site
 Sitemap: https://calculosclt.com.br/sitemap.xml
