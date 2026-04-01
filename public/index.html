@@ -9,38 +9,14 @@
       content="Calculadora CLT 2026 para salário líquido, férias, 13º salário e rescisão."
     />
 
-    <meta name="google-adsense-account" content="ca-pub-7965346166258299">
+   <meta name="google-adsense-account" content="ca-pub-7965346166258299">
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18047513198"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
-      // Configuração do Google Ads
       gtag('config', 'AW-18047513198');
-      
-      // Configuração do Google Analytics (ID G-KYT5T9JYYQ)
-      gtag('config', 'G-KYT5T9JYYQ');
-
-      // Função completa de rastreamento de uso da calculadora
-      function trackConversion() {
-        // Envia para o Google Ads
-        gtag('event', 'conversion', {
-            'send_to': 'AW-18047513198/calculo_efetuado',
-            'value': 1.0,
-            'currency': 'BRL'
-        });
-        
-        // Envia para o Google Analytics
-        gtag('event', 'calculo_clt_realizado', {
-            'event_category': 'ferramenta',
-            'event_label': 'Calculadora CLT 2026',
-            'value': 1
-        });
-        
-        console.log("Evento registrado no Ads e Analytics!");
-      }
     </script>
 
     <script
@@ -50,20 +26,9 @@
     </script>
 
     <title>Calculadora CLT 2026</title>
-
-    <style>
-      body { font-family: sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-      #root { width: 100%; max-width: 500px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-      h1 { color: #333; font-size: 1.5rem; text-align: center; }
-    </style>
   </head>
 
   <body>
-    
-    <div id="root">
-      <h1>Calculadora CLT 2026</h1>
-      <p style="text-align: center;">Carregando ferramentas de cálculo...</p>
-    </div>
-
-    </body>
+    <div id="root"></div>
+  </body>
 </html>
