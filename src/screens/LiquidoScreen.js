@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback, memo } from "react";
 import {
   View,
   StyleSheet,
@@ -25,6 +25,41 @@ const formatarMoeda = (valor) =>
     style: "currency",
     currency: "BRL",
   }).format(Number(valor || 0));
+
+const inputTheme = {
+  colors: {
+    onSurfaceVariant: "#94a3b8",
+    outline: "rgba(255,255,255,0.10)",
+    primary: "#60a5fa",
+    background: "#14233f",
+  },
+};
+
+const accordionTheme = {
+  colors: {
+    background: "#14233f",
+    primary: "#60a5fa",
+    onSurface: "#f8fafc",
+    onSurfaceVariant: "#94a3b8",
+  },
+};
+
+const Detalhamento = memo(({ label, valor, cor, destaque = false }) => (
+  <View style={styles.rowBetween}>
+    <Text style={[styles.detailLabel, destaque && styles.detailLabelStrong]}>
+      {label}
+    </Text>
+    <Text
+      style={[
+        styles.detailValue,
+        { color: cor },
+        destaque && styles.detailValueStrong,
+      ]}
+    >
+      {formatarMoeda(valor)}
+    </Text>
+  </View>
+));
 
 export default function LiquidoScreen({ navigation }) {
   const { width } = useWindowDimensions();
@@ -61,7 +96,27 @@ export default function LiquidoScreen({ navigation }) {
   const [showExtra, setShowExtra] = useState(true);
   const [showHoras, setShowHoras] = useState(false);
 
-  const handleCalcular = () => {
+  const updateCampo = useCallback((campo, valor) => {
+    setDados((prev) => ({ ...prev, [campo]: valor }));
+  }, []);
+
+  const handlePericulosidade = useCallback((v) => {
+    setDados((prev) => ({
+      ...prev,
+      periculosidade: v,
+      insalubridade: v ? false : prev.insalubridade,
+    }));
+  }, []);
+
+  const handleInsalubridade = useCallback((v) => {
+    setDados((prev) => ({
+      ...prev,
+      insalubridade: v,
+      periculosidade: v ? false : prev.periculosidade,
+    }));
+  }, []);
+
+  const handleCalcular = useCallback(() => {
     const brutoNum = parseFloat((dados.bruto || "").replace(",", "."));
     if (!brutoNum) return;
 
@@ -73,7 +128,33 @@ export default function LiquidoScreen({ navigation }) {
     });
 
     setRes(resultado);
-  };
+  }, [dados]);
+
+  const accordionLeftExtra = useCallback(
+    (props) => (
+      <List.Icon
+        {...props}
+        icon="shield-check-outline"
+        color="#60a5fa"
+      />
+    ),
+    []
+  );
+
+  const accordionLeftHoras = useCallback(
+    (props) => <List.Icon {...props} icon="clock-outline" color="#60a5fa" />,
+    []
+  );
+
+  const heroStyle = useMemo(
+    () => [
+      styles.hero,
+      isDesktop && styles.heroDesktop,
+      isTablet && styles.heroTablet,
+      isMobile && styles.heroMobile,
+    ],
+    [isDesktop, isTablet, isMobile]
+  );
 
   return (
     <>
@@ -82,14 +163,29 @@ export default function LiquidoScreen({ navigation }) {
       <View style={styles.root}>
         <ScrollView
           style={styles.container}
-          contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={[
+            styles.contentContainer,
+            isMobile && styles.contentContainerMobile,
+          ]}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={Platform.OS !== "web"}
+          scrollEventThrottle={16}
+          nestedScrollEnabled
+          bounces={false}
+          overScrollMode="never"
+          keyboardShouldPersistTaps="handled"
         >
           <View pointerEvents="none" style={styles.glowOne} />
           <View pointerEvents="none" style={styles.glowTwo} />
 
-          <View style={styles.pageWrap}>
-            <View style={[styles.hero, isDesktop && styles.heroDesktop]}>
+          <View
+            style={[
+              styles.pageWrap,
+              isTablet && styles.pageWrapTablet,
+              isMobile && styles.pageWrapMobile,
+            ]}
+          >
+            <View style={heroStyle}>
               <View style={styles.topBar}>
                 <TouchableOpacity
                   style={styles.backButton}
@@ -108,13 +204,32 @@ export default function LiquidoScreen({ navigation }) {
                 <Text style={styles.heroBadgeText}>Cálculo atualizado</Text>
               </View>
 
-              <Text style={styles.pageTitle}>Salário Líquido CLT</Text>
-              <Text style={styles.pageSubtitle}>
+              <Text
+                style={[
+                  styles.pageTitle,
+                  isTablet && styles.pageTitleTablet,
+                  isMobile && styles.pageTitleMobile,
+                ]}
+              >
+                Salário Líquido CLT
+              </Text>
+
+              <Text
+                style={[
+                  styles.pageSubtitle,
+                  isMobile && styles.pageSubtitleMobile,
+                ]}
+              >
                 Calcule descontos, adicionais, horas extras e adicional noturno
                 com um visual mais simples, moderno e organizado.
               </Text>
 
-              <View style={styles.heroInfoCard}>
+              <View
+                style={[
+                  styles.heroInfoCard,
+                  isMobile && styles.heroInfoCardMobile,
+                ]}
+              >
                 <View style={styles.heroInfoItem}>
                   <Text style={styles.heroInfoValue}>INSS</Text>
                   <Text style={styles.heroInfoLabel}>Atual</Text>
@@ -136,44 +251,33 @@ export default function LiquidoScreen({ navigation }) {
               </View>
             </View>
 
-            <Card style={styles.mainCard}>
+            <Card style={[styles.mainCard, isMobile && styles.mainCardMobile]}>
               <Card.Content style={styles.cardContent}>
                 <Text style={styles.sectionHeading}>Dados principais</Text>
 
                 <TextInput
                   label="Salário Bruto"
                   value={dados.bruto}
-                  onChangeText={(v) => setDados({ ...dados, bruto: v })}
+                  onChangeText={(v) => updateCampo("bruto", v)}
                   keyboardType="numeric"
                   mode="outlined"
                   style={styles.input}
                   left={<TextInput.Affix text="R$ " />}
                   outlineStyle={styles.inputOutline}
                   textColor="#f8fafc"
-                  theme={{
-                    colors: {
-                      onSurfaceVariant: "#94a3b8",
-                      outline: "rgba(255,255,255,0.10)",
-                      primary: "#60a5fa",
-                    },
-                  }}
+                  theme={inputTheme}
                 />
 
                 <List.Accordion
                   title="Adicionais e Descontos"
                   description="Periculosidade, insalubridade, VT, VR e dependentes"
                   expanded={showExtra}
-                  onPress={() => setShowExtra(!showExtra)}
+                  onPress={() => setShowExtra((prev) => !prev)}
                   style={styles.accordion}
                   titleStyle={styles.accordionTitle}
                   descriptionStyle={styles.accordionDescription}
-                  left={(props) => (
-                    <List.Icon
-                      {...props}
-                      icon="shield-check-outline"
-                      color="#60a5fa"
-                    />
-                  )}
+                  left={accordionLeftExtra}
+                  theme={accordionTheme}
                 >
                   <View style={styles.sectionBox}>
                     <View style={styles.optionCard}>
@@ -186,13 +290,7 @@ export default function LiquidoScreen({ navigation }) {
                         </View>
                         <Switch
                           value={dados.periculosidade}
-                          onValueChange={(v) =>
-                            setDados({
-                              ...dados,
-                              periculosidade: v,
-                              insalubridade: v ? false : dados.insalubridade,
-                            })
-                          }
+                          onValueChange={handlePericulosidade}
                         />
                       </View>
 
@@ -205,13 +303,7 @@ export default function LiquidoScreen({ navigation }) {
                         </View>
                         <Switch
                           value={dados.insalubridade}
-                          onValueChange={(v) =>
-                            setDados({
-                              ...dados,
-                              insalubridade: v,
-                              periculosidade: v ? false : dados.periculosidade,
-                            })
-                          }
+                          onValueChange={handleInsalubridade}
                         />
                       </View>
 
@@ -223,7 +315,7 @@ export default function LiquidoScreen({ navigation }) {
                           <SegmentedButtons
                             value={dados.grauInsalubridade}
                             onValueChange={(v) =>
-                              setDados({ ...dados, grauInsalubridade: v })
+                              updateCampo("grauInsalubridade", v)
                             }
                             buttons={[
                               { value: "10", label: "10%" },
@@ -249,19 +341,13 @@ export default function LiquidoScreen({ navigation }) {
                         mode="outlined"
                         style={[
                           styles.inputFlex,
-                          !isMobile && { marginRight: 10 },
+                          !isMobile && styles.inputFlexRight,
                         ]}
                         value={dados.dep}
-                        onChangeText={(v) => setDados({ ...dados, dep: v })}
+                        onChangeText={(v) => updateCampo("dep", v)}
                         outlineStyle={styles.inputOutline}
                         textColor="#f8fafc"
-                        theme={{
-                          colors: {
-                            onSurfaceVariant: "#94a3b8",
-                            outline: "rgba(255,255,255,0.10)",
-                            primary: "#60a5fa",
-                          },
-                        }}
+                        theme={inputTheme}
                       />
 
                       <TextInput
@@ -270,16 +356,10 @@ export default function LiquidoScreen({ navigation }) {
                         mode="outlined"
                         style={styles.inputFlex}
                         value={dados.pensao}
-                        onChangeText={(v) => setDados({ ...dados, pensao: v })}
+                        onChangeText={(v) => updateCampo("pensao", v)}
                         outlineStyle={styles.inputOutline}
                         textColor="#f8fafc"
-                        theme={{
-                          colors: {
-                            onSurfaceVariant: "#94a3b8",
-                            outline: "rgba(255,255,255,0.10)",
-                            primary: "#60a5fa",
-                          },
-                        }}
+                        theme={inputTheme}
                       />
                     </View>
 
@@ -293,7 +373,7 @@ export default function LiquidoScreen({ navigation }) {
                         </View>
                         <Switch
                           value={dados.vt}
-                          onValueChange={(v) => setDados({ ...dados, vt: v })}
+                          onValueChange={(v) => updateCampo("vt", v)}
                         />
                       </View>
                     </View>
@@ -304,17 +384,11 @@ export default function LiquidoScreen({ navigation }) {
                       mode="outlined"
                       style={styles.input}
                       value={dados.vr}
-                      onChangeText={(v) => setDados({ ...dados, vr: v })}
+                      onChangeText={(v) => updateCampo("vr", v)}
                       left={<TextInput.Affix text="R$ " />}
                       outlineStyle={styles.inputOutline}
                       textColor="#f8fafc"
-                      theme={{
-                        colors: {
-                          onSurfaceVariant: "#94a3b8",
-                          outline: "rgba(255,255,255,0.10)",
-                          primary: "#60a5fa",
-                        },
-                      }}
+                      theme={inputTheme}
                     />
                   </View>
                 </List.Accordion>
@@ -323,18 +397,18 @@ export default function LiquidoScreen({ navigation }) {
                   title="Horas Extras e Adicional Noturno"
                   description="Informe percentuais e quantidade de horas"
                   expanded={showHoras}
-                  onPress={() => setShowHoras(!showHoras)}
+                  onPress={() => setShowHoras((prev) => !prev)}
                   style={styles.accordion}
                   titleStyle={styles.accordionTitle}
                   descriptionStyle={styles.accordionDescription}
-                  left={(props) => (
-                    <List.Icon {...props} icon="clock-outline" color="#60a5fa" />
-                  )}
+                  left={accordionLeftHoras}
+                  theme={accordionTheme}
                 >
                   <View style={styles.sectionBox}>
                     <View style={styles.helperBox}>
                       <Text style={styles.helperText}>
-                        Ajuste os percentuais e a quantidade de horas de cada faixa.
+                        Ajuste os percentuais e a quantidade de horas de cada
+                        faixa.
                       </Text>
                     </View>
 
@@ -356,16 +430,10 @@ export default function LiquidoScreen({ navigation }) {
                               styles.hourSmallInput,
                               isMobile && styles.hourSmallInputMobile,
                             ]}
-                            onChangeText={(v) => setDados({ ...dados, p50: v })}
+                            onChangeText={(v) => updateCampo("p50", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                           <TextInput
                             label="Horas"
@@ -373,16 +441,10 @@ export default function LiquidoScreen({ navigation }) {
                             mode="outlined"
                             keyboardType="numeric"
                             style={styles.hourLargeInput}
-                            onChangeText={(v) => setDados({ ...dados, h50: v })}
+                            onChangeText={(v) => updateCampo("h50", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                         </View>
                       </View>
@@ -404,16 +466,10 @@ export default function LiquidoScreen({ navigation }) {
                               styles.hourSmallInput,
                               isMobile && styles.hourSmallInputMobile,
                             ]}
-                            onChangeText={(v) => setDados({ ...dados, p70: v })}
+                            onChangeText={(v) => updateCampo("p70", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                           <TextInput
                             label="Horas"
@@ -421,16 +477,10 @@ export default function LiquidoScreen({ navigation }) {
                             mode="outlined"
                             keyboardType="numeric"
                             style={styles.hourLargeInput}
-                            onChangeText={(v) => setDados({ ...dados, h70: v })}
+                            onChangeText={(v) => updateCampo("h70", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                         </View>
                       </View>
@@ -452,16 +502,10 @@ export default function LiquidoScreen({ navigation }) {
                               styles.hourSmallInput,
                               isMobile && styles.hourSmallInputMobile,
                             ]}
-                            onChangeText={(v) => setDados({ ...dados, p100: v })}
+                            onChangeText={(v) => updateCampo("p100", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                           <TextInput
                             label="Horas"
@@ -469,16 +513,10 @@ export default function LiquidoScreen({ navigation }) {
                             mode="outlined"
                             keyboardType="numeric"
                             style={styles.hourLargeInput}
-                            onChangeText={(v) => setDados({ ...dados, h100: v })}
+                            onChangeText={(v) => updateCampo("h100", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                         </View>
                       </View>
@@ -497,7 +535,7 @@ export default function LiquidoScreen({ navigation }) {
                         <Switch
                           value={dados.adicionalNoturno}
                           onValueChange={(v) =>
-                            setDados({ ...dados, adicionalNoturno: v })
+                            updateCampo("adicionalNoturno", v)
                           }
                         />
                       </View>
@@ -521,18 +559,10 @@ export default function LiquidoScreen({ navigation }) {
                               styles.hourSmallInput,
                               isMobile && styles.hourSmallInputMobile,
                             ]}
-                            onChangeText={(v) =>
-                              setDados({ ...dados, pNoturna: v })
-                            }
+                            onChangeText={(v) => updateCampo("pNoturna", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                           <TextInput
                             label="Horas"
@@ -540,18 +570,10 @@ export default function LiquidoScreen({ navigation }) {
                             mode="outlined"
                             keyboardType="numeric"
                             style={styles.hourLargeInput}
-                            onChangeText={(v) =>
-                              setDados({ ...dados, hNoturna: v })
-                            }
+                            onChangeText={(v) => updateCampo("hNoturna", v)}
                             outlineStyle={styles.inputOutline}
                             textColor="#f8fafc"
-                            theme={{
-                              colors: {
-                                onSurfaceVariant: "#94a3b8",
-                                outline: "rgba(255,255,255,0.10)",
-                                primary: "#60a5fa",
-                              },
-                            }}
+                            theme={inputTheme}
                           />
                         </View>
                       </View>
@@ -563,16 +585,10 @@ export default function LiquidoScreen({ navigation }) {
                       mode="outlined"
                       keyboardType="numeric"
                       style={styles.input}
-                      onChangeText={(v) => setDados({ ...dados, jornada: v })}
+                      onChangeText={(v) => updateCampo("jornada", v)}
                       outlineStyle={styles.inputOutline}
                       textColor="#f8fafc"
-                      theme={{
-                        colors: {
-                          onSurfaceVariant: "#94a3b8",
-                          outline: "rgba(255,255,255,0.10)",
-                          primary: "#60a5fa",
-                        },
-                      }}
+                      theme={inputTheme}
                     />
                   </View>
                 </List.Accordion>
@@ -589,8 +605,8 @@ export default function LiquidoScreen({ navigation }) {
               </Card.Content>
             </Card>
 
-            {res && (
-              <Card style={styles.resultCard}>
+            {res !== null && (
+              <Card style={[styles.resultCard, isMobile && styles.resultCardMobile]}>
                 <Card.Content style={styles.resultContent}>
                   <View style={styles.resultHeader}>
                     <Text style={styles.resultTitle}>Resumo do Salário</Text>
@@ -721,29 +737,11 @@ export default function LiquidoScreen({ navigation }) {
   );
 }
 
-const Detalhamento = ({ label, valor, cor, destaque = false }) => (
-  <View style={styles.rowBetween}>
-    <Text style={[styles.detailLabel, destaque && styles.detailLabelStrong]}>
-      {label}
-    </Text>
-    <Text
-      style={[
-        styles.detailValue,
-        { color: cor },
-        destaque && styles.detailValueStrong,
-      ]}
-    >
-      {formatarMoeda(valor)}
-    </Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: "#081120",
   },
-  
 
   container: {
     flex: 1,
@@ -751,8 +749,13 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    paddingTop: Platform.OS === "web" ? 18 : 0,
-    paddingBottom: 40,
+    paddingTop: Platform.OS === "web" ? 14 : 6,
+    paddingBottom: 32,
+  },
+
+  contentContainerMobile: {
+    paddingTop: 6,
+    paddingBottom: 24,
   },
 
   pageWrap: {
@@ -762,46 +765,65 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
 
+  pageWrapTablet: {
+    paddingHorizontal: 16,
+  },
+
+  pageWrapMobile: {
+    paddingHorizontal: 12,
+  },
+
   glowOne: {
     position: "absolute",
-    top: -70,
+    top: -50,
     right: -20,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: "rgba(37,99,235,0.20)",
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: "rgba(37,99,235,0.10)",
   },
 
   glowTwo: {
     position: "absolute",
     top: 320,
-    left: -50,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: "rgba(34,197,94,0.10)",
+    left: -40,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "rgba(34,197,94,0.05)",
   },
 
   hero: {
     backgroundColor: "#111c34",
-    borderRadius: 30,
+    borderRadius: 24,
     paddingHorizontal: 20,
     paddingTop: 18,
-    paddingBottom: 24,
-    marginBottom: 18,
+    paddingBottom: 22,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   heroDesktop: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 28,
     paddingTop: 22,
-    paddingBottom: 28,
+    paddingBottom: 24,
+  },
+
+  heroTablet: {
+    paddingHorizontal: 24,
+  },
+
+  heroMobile: {
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 18,
   },
 
   topBar: {
@@ -812,7 +834,7 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(255,255,255,0.07)",
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -827,7 +849,7 @@ const styles = StyleSheet.create({
   },
 
   heroMiniBadge: {
-    backgroundColor: "rgba(96,165,250,0.18)",
+    backgroundColor: "rgba(96,165,250,0.16)",
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -841,13 +863,13 @@ const styles = StyleSheet.create({
 
   heroBadge: {
     alignSelf: "flex-start",
-    backgroundColor: "rgba(96,165,250,0.18)",
+    backgroundColor: "rgba(96,165,250,0.16)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: "rgba(147,197,253,0.25)",
+    borderColor: "rgba(147,197,253,0.20)",
   },
 
   heroBadgeText: {
@@ -863,24 +885,43 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
+  pageTitleTablet: {
+    fontSize: 28,
+  },
+
+  pageTitleMobile: {
+    fontSize: 25,
+  },
+
   pageSubtitle: {
     fontSize: 14,
     color: "#cbd5e1",
     lineHeight: 21,
-    marginBottom: 18,
+    marginBottom: 16,
     maxWidth: 760,
   },
 
+  pageSubtitleMobile: {
+    fontSize: 13.5,
+    lineHeight: 20,
+  },
+
   heroInfoCard: {
-    backgroundColor: "rgba(255,255,255,0.06)",
-    borderRadius: 22,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
+  },
+
+  heroInfoCardMobile: {
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
   },
 
   heroInfoItem: {
@@ -889,39 +930,45 @@ const styles = StyleSheet.create({
   },
 
   heroInfoValue: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "900",
     color: "#ffffff",
     marginBottom: 4,
+    textAlign: "center",
   },
 
   heroInfoLabel: {
-    fontSize: 12,
+    fontSize: 11.5,
     color: "#cbd5e1",
     fontWeight: "600",
+    textAlign: "center",
   },
 
   heroDivider: {
     width: 1,
-    height: 28,
-    backgroundColor: "rgba(255,255,255,0.14)",
+    height: 24,
+    backgroundColor: "rgba(255,255,255,0.12)",
   },
 
   mainCard: {
-    borderRadius: 24,
-    marginBottom: 18,
+    borderRadius: 22,
+    marginBottom: 16,
     backgroundColor: "#0f1a30",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 14,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+
+  mainCardMobile: {
+    borderRadius: 18,
   },
 
   cardContent: {
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
 
   sectionHeading: {
@@ -937,18 +984,18 @@ const styles = StyleSheet.create({
   },
 
   inputOutline: {
-    borderRadius: 16,
-    borderWidth: 1.2,
+    borderRadius: 15,
+    borderWidth: 1.1,
     borderColor: "rgba(255,255,255,0.10)",
   },
 
   accordion: {
-    backgroundColor: "#13203a",
-    borderRadius: 20,
+    backgroundColor: "#14233f",
+    borderRadius: 18,
     marginBottom: 14,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(96,165,250,0.14)",
+    borderColor: "rgba(96,165,250,0.10)",
   },
 
   accordionTitle: {
@@ -966,16 +1013,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingBottom: 14,
     paddingTop: 6,
-    backgroundColor: "#0f1a30",
+    backgroundColor: "#14233f",
   },
 
   optionCard: {
-    backgroundColor: "#14233f",
-    borderRadius: 18,
+    backgroundColor: "#162846",
+    borderRadius: 16,
     padding: 12,
     marginBottom: 6,
     borderWidth: 1,
-    borderColor: "rgba(96,165,250,0.10)",
+    borderColor: "rgba(96,165,250,0.08)",
   },
 
   responsiveRow: {
@@ -987,12 +1034,15 @@ const styles = StyleSheet.create({
   responsiveColumn: {
     flexDirection: "column",
     alignItems: "stretch",
-    gap: 12,
   },
 
   inputFlex: {
     flex: 1,
     backgroundColor: "#14233f",
+  },
+
+  inputFlexRight: {
+    marginRight: 10,
   },
 
   switchRow: {
@@ -1040,13 +1090,13 @@ const styles = StyleSheet.create({
   },
 
   helperBox: {
-    backgroundColor: "rgba(96,165,250,0.10)",
+    backgroundColor: "rgba(96,165,250,0.06)",
     borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "rgba(96,165,250,0.14)",
+    borderColor: "rgba(96,165,250,0.10)",
   },
 
   helperText: {
@@ -1056,16 +1106,14 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  hoursGrid: {
-    gap: 12,
-  },
+  hoursGrid: {},
 
   hourCard: {
-    backgroundColor: "#14233f",
-    borderRadius: 18,
+    backgroundColor: "#162846",
+    borderRadius: 16,
     padding: 12,
     borderWidth: 1,
-    borderColor: "rgba(96,165,250,0.10)",
+    borderColor: "rgba(96,165,250,0.08)",
     marginBottom: 12,
   },
 
@@ -1104,13 +1152,13 @@ const styles = StyleSheet.create({
 
   btn: {
     marginTop: 10,
-    borderRadius: 18,
+    borderRadius: 16,
     backgroundColor: "#2563eb",
     shadowColor: "#2563eb",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.22,
-    shadowRadius: 10,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   btnContent: {
@@ -1119,24 +1167,28 @@ const styles = StyleSheet.create({
 
   btnLabel: {
     fontWeight: "900",
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
     fontSize: 14,
   },
 
   resultCard: {
-    borderRadius: 24,
+    borderRadius: 22,
     backgroundColor: "#0f1a30",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 14,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+
+  resultCardMobile: {
+    borderRadius: 18,
   },
 
   resultContent: {
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
 
   resultHeader: {
@@ -1160,7 +1212,7 @@ const styles = StyleSheet.create({
 
   resultSection: {
     backgroundColor: "#111c34",
-    borderRadius: 18,
+    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginBottom: 12,
@@ -1174,7 +1226,7 @@ const styles = StyleSheet.create({
     color: "#cbd5e1",
     marginBottom: 8,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.5,
   },
 
   rowBetween: {
@@ -1214,24 +1266,24 @@ const styles = StyleSheet.create({
   totalBox: {
     marginTop: 8,
     backgroundColor: "rgba(34,197,94,0.10)",
-    borderRadius: 22,
-    paddingVertical: 20,
+    borderRadius: 18,
+    paddingVertical: 18,
     paddingHorizontal: 16,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(34,197,94,0.18)",
+    borderColor: "rgba(34,197,94,0.16)",
   },
 
   totalLabel: {
     fontSize: 12,
     fontWeight: "900",
     color: "#86efac",
-    letterSpacing: 1,
+    letterSpacing: 0.8,
     marginBottom: 6,
   },
 
   total: {
-    fontSize: 32,
+    fontSize: 30,
     textAlign: "center",
     fontWeight: "900",
     color: "#22c55e",

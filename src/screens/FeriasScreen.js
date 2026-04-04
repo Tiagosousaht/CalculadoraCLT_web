@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback, memo } from "react";
 import {
   View,
   StyleSheet,
@@ -24,9 +24,48 @@ const formatarMoeda = (valor) =>
     currency: "BRL",
   }).format(Number(valor || 0));
 
+const inputTheme = {
+  colors: {
+    primary: "#0a66c2",
+    outline: "rgba(255,255,255,0.14)",
+    onSurfaceVariant: "#94a3b8",
+    background: "#14233f",
+  },
+};
+
+const MoneyItem = memo(
+  ({ label, valor, cor = "#22c55e", destaque = false }) => (
+    <View style={styles.rowBetween}>
+      <Text style={[styles.detailLabel, destaque && styles.detailLabelStrong]}>
+        {label}
+      </Text>
+      <Text
+        style={[
+          styles.detailValue,
+          { color: cor },
+          destaque && styles.detailValueStrong,
+        ]}
+      >
+        {formatarMoeda(valor)}
+      </Text>
+    </View>
+  )
+);
+
+const InfoItem = memo(({ label, valor, cor = "#ffffff" }) => (
+  <View style={styles.rowBetween}>
+    <Text style={styles.detailLabel}>{label}</Text>
+    <Text style={[styles.detailValue, { color: cor }]}>
+      {Number(valor || 0).toFixed(2)}
+    </Text>
+  </View>
+));
+
 export default function FeriasScreen({ navigation }) {
   const { width } = useWindowDimensions();
+
   const isDesktop = width >= 1100;
+  const isTablet = width >= 768 && width < 1100;
   const isMobile = width < 768;
 
   const [salario, setSalario] = useState("");
@@ -36,15 +75,7 @@ export default function FeriasScreen({ navigation }) {
   const [periculosidade, setPericulosidade] = useState(false);
   const [res, setRes] = useState(null);
 
-  const inputTheme = {
-    colors: {
-      primary: "#0a66c2",
-      outline: "rgba(255,255,255,0.14)",
-      onSurfaceVariant: "#94a3b8",
-    },
-  };
-
-  const calcular = () => {
+  const calcular = useCallback(() => {
     const resultado = calcularFerias({
       salario: parseFloat((salario || "").replace(",", ".")) || 0,
       mesesTrabalhados:
@@ -55,23 +86,48 @@ export default function FeriasScreen({ navigation }) {
     });
 
     setRes(resultado);
-  };
+  }, [salario, mesesTrabalhados, dependentes, vender10, periculosidade]);
+
+  const heroStyle = useMemo(
+    () => [
+      styles.hero,
+      isDesktop && styles.heroDesktop,
+      isTablet && styles.heroTablet,
+      isMobile && styles.heroMobile,
+    ],
+    [isDesktop, isTablet, isMobile]
+  );
 
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="rgb(17, 28, 52)" />
+      <StatusBar barStyle="light-content" backgroundColor="#111c34" />
 
       <View style={styles.root}>
         <ScrollView
           style={styles.container}
-          contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={[
+            styles.contentContainer,
+            isMobile && styles.contentContainerMobile,
+          ]}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={Platform.OS !== "web"}
+          scrollEventThrottle={16}
+          nestedScrollEnabled
+          bounces={false}
+          overScrollMode="never"
+          keyboardShouldPersistTaps="handled"
         >
           <View pointerEvents="none" style={styles.glowOne} />
           <View pointerEvents="none" style={styles.glowTwo} />
 
-          <View style={styles.pageWrap}>
-            <View style={[styles.hero, isDesktop && styles.heroDesktop]}>
+          <View
+            style={[
+              styles.pageWrap,
+              isTablet && styles.pageWrapTablet,
+              isMobile && styles.pageWrapMobile,
+            ]}
+          >
+            <View style={heroStyle}>
               <View style={styles.topBar}>
                 <TouchableOpacity
                   style={styles.backButton}
@@ -90,13 +146,32 @@ export default function FeriasScreen({ navigation }) {
                 <Text style={styles.heroBadgeText}>Simulação de férias</Text>
               </View>
 
-              <Text style={styles.pageTitle}>Cálculo de Férias</Text>
-              <Text style={styles.pageSubtitle}>
+              <Text
+                style={[
+                  styles.pageTitle,
+                  isTablet && styles.pageTitleTablet,
+                  isMobile && styles.pageTitleMobile,
+                ]}
+              >
+                Cálculo de Férias
+              </Text>
+
+              <Text
+                style={[
+                  styles.pageSubtitle,
+                  isMobile && styles.pageSubtitleMobile,
+                ]}
+              >
                 Veja férias proporcionais, abono, adicionais e descontos de forma
                 clara, moderna e organizada.
               </Text>
 
-              <View style={styles.heroInfoCard}>
+              <View
+                style={[
+                  styles.heroInfoCard,
+                  isMobile && styles.heroInfoCardMobile,
+                ]}
+              >
                 <View style={styles.heroInfoItem}>
                   <Text style={styles.heroInfoValue}>1/3</Text>
                   <Text style={styles.heroInfoLabel}>Constitucional</Text>
@@ -118,7 +193,7 @@ export default function FeriasScreen({ navigation }) {
               </View>
             </View>
 
-            <Card style={styles.mainCard}>
+            <Card style={[styles.mainCard, isMobile && styles.mainCardMobile]}>
               <Card.Content style={styles.cardContent}>
                 <Text style={styles.sectionHeading}>Dados para cálculo</Text>
 
@@ -212,8 +287,8 @@ export default function FeriasScreen({ navigation }) {
               </Card.Content>
             </Card>
 
-            {res && (
-              <Card style={styles.resultCard}>
+            {res !== null && (
+              <Card style={[styles.resultCard, isMobile && styles.resultCardMobile]}>
                 <Card.Content style={styles.resultContent}>
                   <View style={styles.resultHeader}>
                     <Text style={styles.resultTitle}>Resumo das Férias</Text>
@@ -226,7 +301,10 @@ export default function FeriasScreen({ navigation }) {
                     <Text style={styles.resultSectionTitle}>Informações</Text>
 
                     <InfoItem label="Anos Completos" valor={res.anosCompletos} />
-                    <InfoItem label="Meses Restantes" valor={res.mesesRestantes} />
+                    <InfoItem
+                      label="Meses Restantes"
+                      valor={res.mesesRestantes}
+                    />
                     <InfoItem label="Dias de Férias" valor={res.diasFerias} />
                   </View>
 
@@ -285,46 +363,25 @@ export default function FeriasScreen({ navigation }) {
   );
 }
 
-const MoneyItem = ({ label, valor, cor = "#22c55e", destaque = false }) => (
-  <View style={styles.rowBetween}>
-    <Text style={[styles.detailLabel, destaque && styles.detailLabelStrong]}>
-      {label}
-    </Text>
-    <Text
-      style={[
-        styles.detailValue,
-        { color: cor },
-        destaque && styles.detailValueStrong,
-      ]}
-    >
-      {formatarMoeda(valor)}
-    </Text>
-  </View>
-);
-
-const InfoItem = ({ label, valor, cor = "#ffffff" }) => (
-  <View style={styles.rowBetween}>
-    <Text style={styles.detailLabel}>{label}</Text>
-    <Text style={[styles.detailValue, { color: cor }]}>
-      {Number(valor || 0).toFixed(2)}
-    </Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "rgb(17, 28, 52)",
+    backgroundColor: "#111c34",
   },
 
   container: {
     flex: 1,
-    backgroundColor: "rgb(17, 28, 52)",
+    backgroundColor: "#111c34",
   },
 
   contentContainer: {
-    paddingTop: Platform.OS === "web" ? 18 : 0,
-    paddingBottom: 40,
+    paddingTop: Platform.OS === "web" ? 14 : 6,
+    paddingBottom: 32,
+  },
+
+  contentContainerMobile: {
+    paddingTop: 6,
+    paddingBottom: 24,
   },
 
   pageWrap: {
@@ -334,46 +391,65 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
 
+  pageWrapTablet: {
+    paddingHorizontal: 16,
+  },
+
+  pageWrapMobile: {
+    paddingHorizontal: 12,
+  },
+
   glowOne: {
     position: "absolute",
-    top: -70,
-    right: -30,
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: "rgba(10,102,194,0.12)",
+    top: -50,
+    right: -20,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: "rgba(10,102,194,0.08)",
   },
 
   glowTwo: {
     position: "absolute",
     top: 300,
-    left: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: "rgba(10,102,194,0.07)",
+    left: -40,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "rgba(10,102,194,0.05)",
   },
 
   hero: {
-    backgroundColor: "rgb(17, 28, 52)",
-    borderRadius: 30,
+    backgroundColor: "#111c34",
+    borderRadius: 24,
     paddingHorizontal: 20,
     paddingTop: 18,
-    paddingBottom: 24,
-    marginBottom: 18,
+    paddingBottom: 22,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   heroDesktop: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 28,
     paddingTop: 22,
-    paddingBottom: 28,
+    paddingBottom: 24,
+  },
+
+  heroTablet: {
+    paddingHorizontal: 24,
+  },
+
+  heroMobile: {
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 18,
   },
 
   topBar: {
@@ -384,7 +460,7 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(255,255,255,0.07)",
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -435,24 +511,43 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
+  pageTitleTablet: {
+    fontSize: 28,
+  },
+
+  pageTitleMobile: {
+    fontSize: 25,
+  },
+
   pageSubtitle: {
     fontSize: 14,
     color: "#cbd5e1",
     lineHeight: 21,
-    marginBottom: 18,
+    marginBottom: 16,
     maxWidth: 760,
   },
 
+  pageSubtitleMobile: {
+    fontSize: 13.5,
+    lineHeight: 20,
+  },
+
   heroInfoCard: {
-    backgroundColor: "rgba(255,255,255,0.06)",
-    borderRadius: 22,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
+  },
+
+  heroInfoCardMobile: {
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
   },
 
   heroInfoItem: {
@@ -477,25 +572,29 @@ const styles = StyleSheet.create({
 
   heroDivider: {
     width: 1,
-    height: 28,
-    backgroundColor: "rgba(255,255,255,0.14)",
+    height: 24,
+    backgroundColor: "rgba(255,255,255,0.12)",
   },
 
   mainCard: {
-    borderRadius: 24,
-    marginBottom: 18,
+    borderRadius: 22,
+    marginBottom: 16,
     backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.10,
-    shadowRadius: 14,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+
+  mainCardMobile: {
+    borderRadius: 18,
   },
 
   cardContent: {
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
 
   sectionHeading: {
@@ -511,24 +610,22 @@ const styles = StyleSheet.create({
   },
 
   inputOutline: {
-    borderRadius: 16,
-    borderWidth: 1.2,
+    borderRadius: 15,
+    borderWidth: 1.1,
     borderColor: "rgba(255,255,255,0.12)",
   },
 
   optionGrid: {
-    gap: 12,
+    marginTop: 2,
   },
 
-  optionGridMobile: {
-    gap: 12,
-  },
+  optionGridMobile: {},
 
   optionCard: {
     backgroundColor: "rgba(255,255,255,0.03)",
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 12,
-    marginBottom: 0,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.06)",
   },
@@ -559,13 +656,13 @@ const styles = StyleSheet.create({
 
   btn: {
     marginTop: 10,
-    borderRadius: 18,
+    borderRadius: 16,
     backgroundColor: "#0a66c2",
     shadowColor: "#0a66c2",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.20,
-    shadowRadius: 10,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   btnContent: {
@@ -574,24 +671,28 @@ const styles = StyleSheet.create({
 
   btnLabel: {
     fontWeight: "900",
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
     fontSize: 14,
   },
 
   resultCard: {
-    borderRadius: 24,
+    borderRadius: 22,
     backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.10,
-    shadowRadius: 12,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+
+  resultCardMobile: {
+    borderRadius: 18,
   },
 
   resultContent: {
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
 
   resultHeader: {
@@ -615,7 +716,7 @@ const styles = StyleSheet.create({
 
   resultSection: {
     backgroundColor: "rgba(255,255,255,0.03)",
-    borderRadius: 18,
+    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginBottom: 12,
@@ -629,7 +730,7 @@ const styles = StyleSheet.create({
     color: "#cbd5e1",
     marginBottom: 8,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.5,
   },
 
   rowBetween: {
@@ -669,24 +770,25 @@ const styles = StyleSheet.create({
   totalBox: {
     marginTop: 8,
     backgroundColor: "rgba(16,185,129,0.12)",
-    borderRadius: 22,
-    paddingVertical: 20,
+    borderRadius: 18,
+    paddingVertical: 18,
     paddingHorizontal: 16,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(16,185,129,0.25)",
+    borderColor: "rgba(16,185,129,0.22)",
   },
 
   totalLabel: {
     fontSize: 12,
     fontWeight: "900",
     color: "#86efac",
-    letterSpacing: 1,
+    letterSpacing: 0.8,
     marginBottom: 6,
+    textAlign: "center",
   },
 
   total: {
-    fontSize: 32,
+    fontSize: 30,
     textAlign: "center",
     fontWeight: "900",
     color: "#22c55e",
