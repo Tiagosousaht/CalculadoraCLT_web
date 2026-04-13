@@ -6,6 +6,7 @@ import {
   Provider as PaperProvider,
   MD3DarkTheme,
 } from "react-native-paper";
+import { Analytics } from "@vercel/analytics/react";
 
 // Importação das Telas
 import HomeScreen from "./src/screens/HomeScreen";
@@ -98,6 +99,7 @@ export default function App() {
             />
           </Stack.Navigator>
         </NavigationContainer>
+        <Analytics />
       </View>
     </PaperProvider>
   );
